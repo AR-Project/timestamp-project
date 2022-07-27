@@ -24,9 +24,36 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api/:date?", (req, res ) =>{
+  const str = req.params.date;
+
+  //Setup
+  const errorMsg = {error: "Invalid Date"};
+  const wrapper = (date) => ({
+    unix: Date.parse(date),
+    utc: date.toUTCString(),
+  })
+  let date;
+
+  if (str === undefined) {
+    date = new Date(Date.now());
+  } else if (str.match(/\d{13}/)) {
+    date =  new Date(parseInt(str))
+  } else {
+    date = new Date(str)
+  }
+
+  if (date.toString() === "Invalid Date") {
+    res.json(errorMsg);
+  } else {
+    res.json(wrapper(date))
+  };
+
+});
+
 
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen((process.env.PORT || 3000), function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
